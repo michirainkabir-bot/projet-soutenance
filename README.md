@@ -128,3 +128,10 @@ DesignationNbre  i intervenentNbre jourPrix par jourMateriel donner les caracter
 
 VIII.	Contraintes techniques
 Pour développer notre application, nous disposerons d’une architecture a deux niveaux existants sur laquelle nous devons baser notre application. Elle est également une application multi utilisateur. La structure de notre application doit être flexible pour mettre en place facilement dans les ordinateurs de la bibliothèque. De plus, le développeur devra suivre toutes les normes techniques pour une meilleure performance, maintenance et facilitant la mise à jour.
+
+
+
+
+
+[Rapport de stage.pdf](https://github.com/user-attachments/files/26226650/Rapport.de.stage.pdf)
+
