@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="client.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Page client</title>
+</head>
+
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+            <img src="1630545870253.png" alt="logo" width="170px" height="150px">
+        </div>
+
+    <h2>Client Panel</h2>
+
+    <ul>
+
+        <li onclick="showSection('dashboard')">
+            <i class="fa-solid fa-chart-line"></i> Dashboard
+        </li>
+
+        <li onclick="showSection('demandes')">
+            <i class="fa-solid fa-file-circle-plus"></i> Mes demandes
+        </li>
+
+        <li onclick="showSection('prestations')">
+            <i class="fa-solid fa-briefcase"></i> Prestations
+        </li>
+
+        <li onclick="showSection('factures')">
+           <i class="fa-solid fa-file-invoice"></i> Factures
+        </li>
+
+        <li onclick="showSection('notifications')">
+            <i class="fa-solid fa-bell"></i> Notifications
+        </li>
+
+        <li onclick="showSection('profil')">
+            <i class="fa-solid fa-user"></i> Mon Profil
+        </li>
+
+    </ul>
+
+</div>
+
+
+<div class="main">
+
+    <header>
+
+        <div class="topbar">
+
+            <h1>Tableau de bord Client</h1>
+
+            <div>
+                <i class="fa-solid fa-bell"></i>
+                <i class="fa-solid fa-user"></i>
+                Client
+            </div>
+
+        </div>
+
+    </header>
+
+
+<!-- DASHBOARD -->
+
+    <div id="dashboard" class="section active">
+
+        <div class="cards">
+
+            <div class="card">
+                <div>
+                    <h3>4</h3>
+                    <p>Demandes envoyées</p>
+                </div>
+                <div class="iconBox blue">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                </div>
+            </div>
+
+            <div class="card">
+                <div>
+                    <h3>2</h3>
+                    <p>Interventions en cours</p>
+                </div>
+                    <div class="iconBox orange">
+                        <i class="fa-solid fa-spinner"></i>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <h3>2</h3>
+                        <p>Terminées</p>
+                    </div>
+                        <div class="iconBox green">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+    <h2>Mes interventions récentes</h2>
+
+    <section class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>ID</th>
+                    <th>Technicien</th>
+                    <th>Prestation</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                <tr>
+                    <td>INT001</td>
+                    <td>Martin</td>
+                    <td>Maintenance IT</td>
+                    <td>15 Mars 2026</td>
+                    <td class="en-cours">En cours</td>
+                </tr>
+
+                <tr>
+                    <td>INT002</td>
+                    <td>Melissa</td>
+                    <td>Site web</td>
+                    <td>18 Mars 2026</td>
+                    <td class="termine">Terminée</td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+    <section class="interventions-planifiees">
+
+        <h2>Interventions planifiées</h2>
+
+            <div class="planning-list">
+
+                <div class="planning-card">
+
+                    <div class="planning-date">
+                        <i class="fa-solid fa-calendar-days"></i> 18 Mars 2026
+                    </div>
+
+                    <div class="planning-details">
+                        <h3>Installation réseau</h3>
+                        <p>Technicien : Martin</p>
+                        <p>Lieu : Bonanjo</p>
+                    </div>
+
+                    <div class="planning-statut en-cours">
+                        En cours
+                    </div>
+
+                </div>
+
+
+                <div class="planning-card">
+
+                    <div class="planning-date">
+                        <i class="fa-solid fa-calendar-days"></i> 20 Mars 2026
+                    </div>
+
+                    <div class="planning-details">
+                        <h3>Maintenance IT</h3>
+                        <p>Technicien : Paul</p>
+                        <p>Lieu : Akwa</p>
+                    </div>
+
+                    <div class="planning-statut attente">
+                        Planifiée
+                    </div>
+
+                </div>
+
+            </div>
+
+    </section>
+
+    <div class="demande-prestation">
+
+        <button class="btn-add" onclick="openDemandeModal()">
+            <i class="fa-solid fa-paper-plane"></i>
+            Demander une prestation
+        </button>
+
+    </div>
+
+</div>
+
+<!--DEMANDES-->
+
+<div class="mesdemandes">
+    <h1 id="message"></h1>
+
+</div>
+
+<!-- PRESTATIONS -->
+
+    <div id="prestations" class="section">
+
+        <h2>Prestations disponibles</h2>
+
+            <section class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Prestation</th>
+                            <th>Description</th>
+                            <th>Prix</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>PRES001</td>
+                            <td>Développement logiciel</td>
+                            <td>Création d'applications mobiles et web.</td>
+                            <td>300 000 FCFA</td>
+                        </tr>
+
+                        <tr>
+                            <td>PRES002</td>
+                            <td>Maintenance IT</td>
+                            <td>Maintenance des systèmes informatiques.</td>
+                            <td>150 000 FCFA</td>
+                        </tr>
+
+                        <tr>
+                            <td>PRES003</td>
+                            <td>Réseaux & Sécurité</td>
+                            <td>Installation et sécurité réseau.</td>
+                            <td>200 000 FCFA</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </section>
+
+            <div class="demande-prestation">
+
+        <div class="demande-prestation">
+
+        <button class="btn-add" onclick="openDemandeModal()">
+            <i class="fa-solid fa-paper-plane"></i>
+            Demander une prestation
+        </button>
+
+    </div>
+
+    </div>
+
+    </div>
+
+
+<!-- FACTURES -->
+
+    <div id="factures" class="section">
+
+        <h2>Mes factures</h2>
+
+            <section class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID Facture</th>
+                            <th>Prestation</th>
+                            <th>Date</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+                            <td>FAC001</td>
+                            <td>Maintenance IT</td>
+                            <td>15 Mars 2026</td>
+                            <td>50 000 FCFA</td>
+                            <td class="termine">Payée</td>
+                            <td>
+                                <button onclick="payerFacture(this)">Payé</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>FAC002</td>
+                            <td>Développement Web</td>
+                            <td>18 Mars 2026</td>
+                            <td>80 000 FCFA</td>
+                            <td class="attente">En attente</td>
+                            <td>
+                                <button onclick="payerFacture(this)">Payer</button>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+             </section>
+
+    </div>
+
+
+<!-- NOTIFICATIONS -->
+
+    <div id="notifications" class="section">
+
+        <h2>Notifications</h2>
+
+            <p><i class="fa-solid fa-bell"></i> Votre intervention a été planifiée</p>
+
+            <p><i class="fa-solid fa-circle-check"></i> Intervention terminée</p>
+
+    </div>
+
+
+<!-- PROFIL -->
+
+    <div id="profil" class="section">
+
+        <h2>Mon Profil</h2>
+
+            <div class="profile-card">
+
+                <p><b>Nom :</b> Sophie</p>
+                <p><b>Email :</b> sophie@gmail.com</p>
+                <p><b>Téléphone :</b> 699000001</p>
+                <p><b>Adresse :</b> Douala</p>
+
+            </div>
+
+    </div>
+
+</div>
+
+<div id="demandeModal" class="modal">
+
+    <div class="modal-content">
+
+        <span class="close" onclick="closeDemandeModal()">&times;</span>
+
+    <h2>Demander une prestation</h2>
+
+        <section class="table-container">
+
+            <form id="demandeForm">
+
+                <label>Prestation</label><br>
+                <select id="prestation">
+                    <option>Développement logiciel</option>
+                    <option>Maintenance IT</option>
+                    <option>Réseaux & Sécurité</option>
+                </select>
+
+                <br><br>
+
+                <label>Email</label><br>
+                <input type="email" id="email" required>
+
+                <br><br>
+
+                <label>Téléphone</label><br>
+                <input type="number" id="telephone" required>
+
+                <br><br>
+
+                <label>Date</label><br>
+                <input type="date" id="date" required>
+
+                <br><br>
+
+                <label>Heure</label><br>
+                <input type="time" id="heure" required>
+
+                <br><br>
+
+                <label>Description</label><br>
+                   <textarea id="description" placeholder="Décrivez votre problème..."></textarea>
+
+                <br><br>
+
+                <button type="submit">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    Envoyer la demande
+                </button>
+
+            </form>
+
+        </section>
+
+    </div>
+
+</div>
+
+<div id="successModal" class="modal">
+
+    <div class="modal-content success-box">
+
+        <i class="fa-solid fa-circle-check success-icon"></i>
+
+        <h2>Demande envoyée !</h2>
+           <p>Votre demande a été envoyée avec succès.</p>
+            <p>Un membre de notre équipe vous contactera
+            prochainement pour discuter des détails.</p>
+           <a href="#message" onclick="closeSuccessModal()" >Accéder à mes demandes</a>
+
+    </div>
+
+</div>
+
+    <script src="client.js"></script>
+
+</body>
+</html>
