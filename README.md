@@ -1,45 +1,30 @@
--- Base de données
-CREATE DATABASE gestion_prestation;
-USE gestion_prestation;
-
--- Table utilisateurs (Admin, Client, Technicien)
-CREATE TABLE utilisateurs (
+-- Table interventions
+CREATE TABLE interventions (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
-    mot_de_passe VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'client', 'technicien') NOT NULL,
-    telephone VARCHAR(20),
-    adresse TEXT,
-    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table services
-CREATE TABLE services (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    titre VARCHAR(150) NOT NULL,
-    description TEXT,
-    prix DECIMAL(10,2),
-    duree_estimee VARCHAR(50),
-    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Table demandes (réservations)
-CREATE TABLE demandes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    client_id INT NOT NULL,
-    technicien_id INT,
-    service_id INT NOT NULL,
-    statut ENUM('en_attente', 'acceptee', 'en_cours', 'terminee', 'annulee') DEFAULT 'en_attente',
-    description_probleme TEXT,
-    date_demande TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    demande_id INT NOT NULL,
+    technicien_id INT NOT NULL,
     date_intervention DATE,
-    commentaire TEXT,
-    FOREIGN KEY (client_id) REFERENCES utilisateurs(id),
+    statut ENUM('planifiee', 'en_cours', 'terminee') DEFAULT 'planifiee',
     FOREIGN KEY (technicien_id) REFERENCES utilisateurs(id),
-    FOREIGN KEY (service_id) REFERENCES services(id)
+    FOREIGN KEY (demande_id) REFERENCES demandes(id)
 );
+
+-- Table factures
+CREATE TABLE factures (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    intervention_id INT NOT NULL,
+    client_id INT NOT NULL,
+    montant DECIMAL(10,2) NOT NULL,
+    date_facture DATE DEFAULT (CURRENT_DATE),
+    statut ENUM('impayee', 'payee') DEFAULT 'impayee',
+    FOREIGN KEY (intervention_id) REFERENCES interventions(id),
+    FOREIGN KEY (client_id) REFERENCES utilisateurs(id)
+);
+
+-- Ajouter specialite au technicien
+ALTER TABLE utilisateurs ADD COLUMN specialite VARCHAR(100);
+
+
 
 
 Section 2 : Cahier de charges
