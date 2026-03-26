@@ -1,27 +1,16 @@
-<form action="auth/login.php" method="POST">
-    <div class="input-group">
-        <input type="email" name="email" placeholder="Adresse Email" required>
-    </div>
+function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const icon = document.querySelector(".eye");
 
-    <div class="input-group">
-        <input type="password" name="mot_de_passe" id="password" placeholder="Mot de passe" required>
-        <i class="fa-solid fa-eye eye" onclick="togglePassword()"></i>
-    </div>
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+        passwordInput.type = "password";
+        icon.classList.replace("fa-eye-slash", "fa-eye");
+    }
+}
 
-    <select name="role" id="role" required>
-        <option value="">Choisir le rôle</option>
-        <option value="admin">Administrateur</option>
-        <option value="client">Client</option>
-        <option value="technicien">Technicien</option>
-    </select>
-
-    <div class="links">
-        <a href="#">Mot de passe oublié ?</a>
-        <a href="inscription.html">Créer un compte ?</a>
-    </div>
-
-    <button type="submit">Connexion</button>
-</form>
 
 
 
