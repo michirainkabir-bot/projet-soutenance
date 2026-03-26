@@ -1,15 +1,42 @@
-function togglePassword() {
-    const passwordInput = document.getElementById("password");
-    const icon = document.querySelector(".eye");
+<?php
+session_start();
+require '../connexion.php';
 
-    if (passwordInput.type === "password") {
-        passwordInput.type = "text";
-        icon.classList.replace("fa-eye", "fa-eye-slash");
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email    = trim($_POST['email']);
+    $password = $_POST['mot_de_passe'];
+    $role     = $_POST['role'];
+
+    $stmt = $pdo->prepare("SELECT * FROM utilisateurs WHERE email = ? AND role = ?");
+    $stmt->execute([$email, $role]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user && password_verify($password, $user['mot_de_passe'])) {
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['nom']     = $user['nom'];
+        $_SESSION['role']    = $user['role'];
+
+        // Redirection selon le rôle
+        switch ($user['role']) {
+            case 'admin':
+                header("Location: ../dashboard admin.html");
+                break;
+            case 'client':
+                header("Location: ../client.html");
+                break;
+            case 'technicien':
+                header("Location: ../technicien.html");
+                break;
+        }
+        exit();
     } else {
-        passwordInput.type = "password";
-        icon.classList.replace("fa-eye-slash", "fa-eye");
+        // Retour avec message d'erreur
+        header("Location: ../connexion.html?erreur=1");
+        exit();
     }
 }
+?>
+
 
 
 
