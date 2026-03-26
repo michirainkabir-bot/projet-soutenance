@@ -1,3 +1,47 @@
+-- Base de données
+CREATE DATABASE gestion_prestation;
+USE gestion_prestation;
+
+-- Table utilisateurs (Admin, Client, Technicien)
+CREATE TABLE utilisateurs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
+    mot_de_passe VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'client', 'technicien') NOT NULL,
+    telephone VARCHAR(20),
+    adresse TEXT,
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table services
+CREATE TABLE services (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titre VARCHAR(150) NOT NULL,
+    description TEXT,
+    prix DECIMAL(10,2),
+    duree_estimee VARCHAR(50),
+    date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table demandes (réservations)
+CREATE TABLE demandes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id INT NOT NULL,
+    technicien_id INT,
+    service_id INT NOT NULL,
+    statut ENUM('en_attente', 'acceptee', 'en_cours', 'terminee', 'annulee') DEFAULT 'en_attente',
+    description_probleme TEXT,
+    date_demande TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_intervention DATE,
+    commentaire TEXT,
+    FOREIGN KEY (client_id) REFERENCES utilisateurs(id),
+    FOREIGN KEY (technicien_id) REFERENCES utilisateurs(id),
+    FOREIGN KEY (service_id) REFERENCES services(id)
+);
+
+
 Section 2 : Cahier de charges
 
 I.	Définition
