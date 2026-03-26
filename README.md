@@ -1,28 +1,29 @@
--- Table interventions
-CREATE TABLE interventions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    demande_id INT NOT NULL,
-    technicien_id INT NOT NULL,
-    date_intervention DATE,
-    statut ENUM('planifiee', 'en_cours', 'terminee') DEFAULT 'planifiee',
-    FOREIGN KEY (technicien_id) REFERENCES utilisateurs(id),
-    FOREIGN KEY (demande_id) REFERENCES demandes(id)
-);
+<form action="auth/login.php" method="POST">
+    <div class="input-group">
+        <input type="email" name="email" placeholder="Adresse Email" required>
+    </div>
 
--- Table factures
-CREATE TABLE factures (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    intervention_id INT NOT NULL,
-    client_id INT NOT NULL,
-    montant DECIMAL(10,2) NOT NULL,
-    date_facture DATE DEFAULT (CURRENT_DATE),
-    statut ENUM('impayee', 'payee') DEFAULT 'impayee',
-    FOREIGN KEY (intervention_id) REFERENCES interventions(id),
-    FOREIGN KEY (client_id) REFERENCES utilisateurs(id)
-);
+    <div class="input-group">
+        <input type="password" name="mot_de_passe" id="password" placeholder="Mot de passe" required>
+        <i class="fa-solid fa-eye eye" onclick="togglePassword()"></i>
+    </div>
 
--- Ajouter specialite au technicien
-ALTER TABLE utilisateurs ADD COLUMN specialite VARCHAR(100);
+    <select name="role" id="role" required>
+        <option value="">Choisir le rôle</option>
+        <option value="admin">Administrateur</option>
+        <option value="client">Client</option>
+        <option value="technicien">Technicien</option>
+    </select>
+
+    <div class="links">
+        <a href="#">Mot de passe oublié ?</a>
+        <a href="inscription.html">Créer un compte ?</a>
+    </div>
+
+    <button type="submit">Connexion</button>
+</form>
+
+
 
 
 
