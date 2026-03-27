@@ -1,0 +1,5 @@
+ok j'ai recostitué le projet en adoptant le model MVC demandé pour la soutenance et comme tu avais des fichiers créés sans prevoyance de ce model, j'ai eu pas mal de difficultés a adapter ton front-end raison pour laquelle tous les axes ne sont pas encor pris en charge faute du temps
+alors voici comment tu vas proceder pour installer le projet dans ta machine: apres avoir cloné le projet, rassure toi de le mattre dans le dossier www et de lancer ton serveur wamp
+une cela fait, ouvre le projet en question dans l'éditeur de texte et vas dans le dossier database tu y trouveras le fichier fgcl.sql, copie le contenu de ce fichier et rends toi dans ton interface phpmayadmin et dans l'onglet SQL, colle tout le contenu que tu as copié sans rien modifier et clique sur le bouton EXECUTER en bas a droite
+une fois la base de données créée , vas sur le naviegateur et tape http://localhost/projet-soutenancen et connecte toi avec les information que je t'ai envoyées via whatsap
+si probleme , tiens moi informé
