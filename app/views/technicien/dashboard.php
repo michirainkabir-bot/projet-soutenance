@@ -207,7 +207,7 @@ function statutBadge(string $s): string {
                         <?php elseif ($i['statut'] === 'en_cours'): ?>
                             <button onclick="ouvrirRapport(<?= $i['id'] ?>)">Terminer</button>
                         <?php else: ?>
-                            <button disabled>Terminée ✓</button>
+                            <button disabled>Terminée</button>
                         <?php endif; ?>
                     </td>
                 </tr>

@@ -49,7 +49,11 @@ $factures = $factures->fetchAll();
 
 // Catalogue des prestations disponibles
 $catalogue = $pdo->query(
-    "SELECT DISTINCT titre, description, montant FROM prestations ORDER BY titre"
+    "SELECT titre, description, montant 
+     FROM prestations 
+     WHERE description IS NOT NULL AND description != '' AND montant > 0
+     GROUP BY titre
+     ORDER BY titre"
 )->fetchAll();
 
 // Profil complet
@@ -105,8 +109,8 @@ function statutClient(string $s): string {
         <div class="topbar">
             <h1>Tableau de bord Client</h1>
             <div>
-                <i class="fa-solid fa-bell"></i>
-                <i class="fa-solid fa-user"></i>
+                <i class="fa-solid fa-bell" onclick="showSection('notifications')" ></i>
+                <i class="fa-solid fa-user" ></i>
                 <?= e($user['prenom'] . ' ' . $user['nom']) ?>
             </div>
         </div>
@@ -319,7 +323,7 @@ function statutClient(string $s): string {
         <h2>Demander une prestation</h2>
         <section class="table-container">
             <!-- NOTE : La demande envoie un message à l'admin. L'admin créera l'intervention. -->
-            <form id="demandeForm" action="<?= BASE_URL ?>/app/controllers/DemandeController.php?action=envoyer" method="POST">
+            <form action="<?= BASE_URL ?>/app/controllers/DemandeController.php?action=envoyer" method="POST">
                 <label>Prestation souhaitée</label><br>
                 <select name="prestation_titre" id="prestation" required>
                     <?php foreach ($catalogue as $p): ?>
@@ -358,24 +362,22 @@ function statutClient(string $s): string {
         <button onclick="closeSuccessModal()">OK</button>
     </div>
 </div>
-
 <script src="<?= BASE_URL ?>/public/js/client.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
     showSection(urlParams.get('section') || 'dashboard');
+
+    <?php if (isset($_GET['success'])): ?>
+    document.getElementById('successModal').style.display = 'flex';
+    <?php endif; ?>
 });
 
 function openDemandeModal()  { document.getElementById('demandeModal').style.display = 'flex'; }
 function closeDemandeModal() { document.getElementById('demandeModal').style.display = 'none'; }
-function closeSuccessModal() { document.getElementById('successModal').style.display = 'none'; }
-
-document.getElementById('demandeForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    closeDemandeModal();
-    document.getElementById('successModal').style.display = 'flex';
-    // En production, soumettre vraiment le formulaire via fetch ou supprimer le e.preventDefault()
-});
+function closeSuccessModal() { 
+    document.getElementById('successModal').style.display = 'none';
+}
 
 window.onclick = function(e) {
     document.querySelectorAll('.modal').forEach(m => {

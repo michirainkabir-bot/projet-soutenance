@@ -12,3 +12,5 @@ if (!empty($_SESSION['user'])) {
 
 // Sinon afficher la page de connexion
 require_once __DIR__ . '/app/views/auth/login.php';
+
+?>

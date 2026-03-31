@@ -9,7 +9,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once __DIR__ . '/database.php';
 
-define('BASE_URL', 'http://localhost/fgcl');
+define('BASE_URL', 'http://localhost/projet-soutenance');
 define('APP_NAME', 'FGCL - Gestion des Prestations');
 define('TVA_TAUX', 19.25); // TVA Cameroun
 

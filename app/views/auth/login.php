@@ -27,6 +27,7 @@
 
         <!-- Formulaire connecté au backend PHP -->
         <form action="<?= BASE_URL ?>/app/controllers/AuthController.php?action=login" method="POST">
+            
 
             <div class="input-group">
                 <input type="email" name="email" placeholder="Adresse Email"
@@ -35,7 +36,7 @@
 
             <div class="input-group">
                 <input type="password" name="password" id="password" placeholder="Mot de passe" required>
-                <i class="fa-solid fa-eye eye" onclick="togglePassword()"></i>
+                <i style="color:black" class="fa-solid fa-eye eye" onclick="togglePassword()"></i>
             </div>
 
             <div class="links">

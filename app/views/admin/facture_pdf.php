@@ -44,7 +44,7 @@
 <div class="no-print" style="text-align:right;margin-bottom:20px">
     <button onclick="window.print()"
             style="padding:10px 20px;background:#1e293b;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px;">
-        <span>🖨</span> Imprimer / Enregistrer en PDF
+        <span><i class="fa-solid fa-floppy-disk"></i></span> Imprimer / Enregistrer en PDF
     </button>
 </div>
 

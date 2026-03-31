@@ -135,6 +135,19 @@ class FactureController
         require_once __DIR__ . '/../views/admin/facture_pdf.php';
         exit;
     }
+
+    /** Marquer une facture comme payée */
+    public function marquerPayee(): void
+{
+    $id = (int)($_POST['id'] ?? 0);
+    $stmt = $this->pdo->prepare(
+        "UPDATE factures SET statut = 'payee' WHERE id = :id"
+    );
+    $stmt->execute([':id' => $id]);
+    $_SESSION['flash'] = ['type' => 'success', 'msg' => 'Facture marquée comme payée.'];
+    header('Location: ' . BASE_URL . '/app/views/admin/dashboard.php?section=factures');
+    exit;
+}
 }
 
 $action = $_GET['action'] ?? '';
@@ -144,4 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'generer') {
     $ctrl->generer();
 } elseif ($action === 'telecharger') {
     $ctrl->telecharger();
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'marquerPayee') { // ← ajouter
+    $ctrl->marquerPayee();
 }
+

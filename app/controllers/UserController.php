@@ -36,6 +36,7 @@ class UserController
         $password = $_POST['password']      ?? '';
         $role     = $_POST['role']          ?? 'client';
         $tel      = trim($_POST['telephone'] ?? '');
+        $specialite = trim($_POST['specialite'] ?? '');
         $adresse  = trim($_POST['adresse']  ?? '');
 
         if (empty($nom) || empty($email) || empty($password)) {
@@ -53,8 +54,8 @@ class UserController
 
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = $this->pdo->prepare(
-            "INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role, telephone, adresse)
-             VALUES (:nom, :prenom, :email, :mdp, :role, :tel, :adresse)"
+            "INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role, telephone, adresse, specialite)
+            VALUES (:nom, :prenom, :email, :mdp, :role, :tel, :adresse, :specialite)"
         );
         $stmt->execute([
             ':nom'     => $nom,
@@ -63,6 +64,7 @@ class UserController
             ':mdp'     => $hash,
             ':role'    => $role,
             ':tel'     => $tel,
+            ':specialite' => $specialite,
             ':adresse' => $adresse,
         ]);
 
@@ -99,6 +101,7 @@ class UserController
         $prenom  = trim($_POST['prenom']      ?? '');
         $email   = trim($_POST['email']       ?? '');
         $tel     = trim($_POST['telephone']   ?? '');
+        $specialite = trim($_POST['specialite'] ?? '');
         $adresse = trim($_POST['adresse']     ?? '');
         $role    = $_POST['role']             ?? 'client';
 
@@ -107,6 +110,7 @@ class UserController
             ':prenom'  => $prenom,
             ':email'   => $email,
             ':tel'     => $tel,
+            ':specialite' => $specialite,
             ':adresse' => $adresse,
             ':id'      => $id,
         ];
@@ -119,8 +123,8 @@ class UserController
         }
 
         $stmt = $this->pdo->prepare(
-            "UPDATE utilisateurs SET nom=:nom, prenom=:prenom, email=:email,
-             telephone=:tel, adresse=:adresse {$passwordSQL} WHERE id=:id"
+        "UPDATE utilisateurs SET nom=:nom, prenom=:prenom, email=:email,
+        telephone=:tel, adresse=:adresse, specialite=:specialite {$passwordSQL} WHERE id=:id"
         );
         $stmt->execute($params);
 

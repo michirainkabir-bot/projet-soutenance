@@ -68,13 +68,15 @@ $factures = $pdo->query(
      ORDER BY f.created_at DESC"
 )->fetchAll();
 
-// Prestations terminées sans facture (pour génération)
-$prestSansFact = $pdo->query(
-    "SELECT p.id, p.titre, CONCAT(c.nom,' ',c.prenom) AS client_nom
+// Prestations — uniquement les demandes des clients (pas les prestations catalogue)
+$demandesClients = $pdo->query(
+    "SELECT p.*, CONCAT(c.nom,' ',c.prenom) AS client_nom,
+            CONCAT(t.nom,' ',t.prenom) AS tech_nom
      FROM prestations p
-     LEFT JOIN factures f ON f.prestation_id=p.id
-     JOIN utilisateurs c ON p.client_id=c.id
-     WHERE p.statut='termine' AND f.id IS NULL"
+     INNER JOIN utilisateurs c ON p.client_id = c.id
+     LEFT JOIN utilisateurs t ON p.technicien_id = t.id
+     WHERE c.role = 'client'
+     ORDER BY p.created_at DESC"
 )->fetchAll();
 
 // Données graphique (interventions par mois)
@@ -147,7 +149,7 @@ function statutLabel(string $s): string {
         <div class="topbar">
             <h1>Tableau de bord administrateur</h1>
             <div>
-                <i class="fa-solid fa-bell"></i>
+                <i class="fa-solid fa-bell" onclick="showSection('notifications')"></i>
                 <i class="fa-solid fa-user"></i>
                 <?= e($user['prenom'] . ' ' . $user['nom']) ?>
             </div>
@@ -203,7 +205,7 @@ function statutLabel(string $s): string {
         <h2>Gestion Clients</h2>
         <div class="cl">
             <input type="text" id="searchClient" placeholder="Rechercher client" oninput="filterTable('tableClients', this.value)">
-            <button class="btn-add-client" onclick="openModal()">
+            <button class="btn-add-client" onclick="openModalclient()">
                 <i class="fa-solid fa-user-plus"></i> Ajouter un client
             </button>
         </div>
@@ -256,7 +258,7 @@ function statutLabel(string $s): string {
                 <thead>
                     <tr>
                         <th>Id</th><th>Nom</th><th>Prénom</th><th>Email</th>
-                        <th>Téléphone</th><th>Actions</th>
+                        <th>Téléphone</th><th>Spécialité</th><th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -267,6 +269,7 @@ function statutLabel(string $s): string {
                     <td><?= e($t['prenom']) ?></td>
                     <td><?= e($t['email']) ?></td>
                     <td><?= e($t['telephone'] ?? '—') ?></td>
+                    <td><?= e($t['specialite'] ?? '—') ?></td>
                     <td class="actions">
                         <i class="fa-solid fa-pen" title="Modifier"
                            onclick="openEditUserModal(<?= htmlspecialchars(json_encode($t)) ?>)"></i>
@@ -342,19 +345,17 @@ function statutLabel(string $s): string {
                 <table id="listePrestations">
                     <thead>
                         <tr>
-                            <th>ID</th><th>Titre</th><th>Client</th><th>Technicien</th>
-                            <th>Montant</th><th>Statut</th><th>Actions</th>
+                            <th>ID</th><th>Titre</th><th>Client</th>
+                            <th>Montant</th><th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                    <?php foreach ($prestations as $p): ?>
+                    <?php foreach ($demandesClients as $p): ?>
                     <tr>
                         <td><?= $p['id'] ?></td>
                         <td><?= e($p['titre']) ?></td>
                         <td><?= e($p['client_nom']) ?></td>
-                        <td><?= e($p['tech_nom'] ?? '—') ?></td>
                         <td><?= number_format($p['montant'], 0, ',', ' ') ?> FCFA</td>
-                        <td><?= statutLabel($p['statut']) ?></td>
                         <td class="actions">
                             <i class="fa-solid fa-pen" onclick="openEditPrestModal(<?= htmlspecialchars(json_encode($p)) ?>)"></i>
                             <a href="<?= BASE_URL ?>/app/controllers/PrestationController.php?action=delete&id=<?= $p['id'] ?>"
@@ -436,9 +437,17 @@ function statutLabel(string $s): string {
                     <td><?= number_format($f['montant_ttc'], 0, ',', ' ') ?> FCFA</td>
                     <td><?= statutLabel($f['statut']) ?></td>
                     <td>
-                        <a href="<?= BASE_URL ?>/app/controllers/FactureController.php?action=telecharger&id=<?= $f['id'] ?>"
-                           target="_blank" title="Télécharger PDF">
-                            <i class="fa-solid fa-file-pdf action" style="color:#e74c3c;font-size:18px;cursor:pointer"></i>
+                        <?php if ($f['statut'] === 'impayee'): ?>
+                            <form action="<?= BASE_URL ?>/app/controllers/FactureController.php?action=marquerPayee" method="POST" style="display:inline">
+                                <input type="hidden" name="id" value="<?= $f['id'] ?>">
+                                    <button type="submit" style="background:#27ae60;color:white;border:none;padding:5px 10px;border-radius:5px;cursor:pointer">
+                                        <i class="fa-solid fa-check"></i> Marquer payée
+                                    </button>
+                            </form>
+                        <?php endif; ?>
+                         <a href="<?= BASE_URL ?>/app/controllers/FactureController.php?action=telecharger&id=<?= $f['id'] ?>"
+                                 target="_blank" title="Télécharger PDF">
+                                <i class="fa-solid fa-file-pdf action" style="color:#e74c3c;font-size:18px;cursor:pointer"></i>
                         </a>
                     </td>
                 </tr>
@@ -457,7 +466,7 @@ function statutLabel(string $s): string {
 <!-- ═══════════════ MODAL : Ajouter client ═══════════════ -->
 <div id="clientModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
+        <span class="close" onclick="closeModalclient()">&times;</span>
         <h2>Ajouter un client</h2>
         <form id="clientForm" action="<?= BASE_URL ?>/app/controllers/UserController.php?action=create" method="POST">
             <input type="hidden" name="role" value="client">
@@ -487,7 +496,7 @@ function statutLabel(string $s): string {
             </div>
             <div class="form-buttons">
                 <button type="submit" class="btn-save"><i class="fa-solid fa-floppy-disk"></i> Enregistrer</button>
-                <button type="button" class="btn-cancel" onclick="closeModal()">Annuler</button>
+                <button type="button" class="btn-cancel" onclick="closeModalclient()">Annuler</button>
             </div>
         </form>
     </div>
@@ -515,6 +524,17 @@ function statutLabel(string $s): string {
             <div class="form-group">
                 <label>Téléphone</label>
                 <input type="text" name="telephone" placeholder="Téléphone">
+            </div>
+            <div class="form-group">
+                <label>Spécialité</label>
+                    <select name="specialite">
+                        <option value="">-- Choisir --</option>
+                        <option value="Réseau">Réseau</option>
+                        <option value="Maintenance IT">Maintenance IT</option>
+                        <option value="Développement">Développement</option>
+                        <option value="Sécurité informatique">Sécurité informatique</option>
+                        <option value="Support technique">Support technique</option>
+                    </select>
             </div>
             <div class="form-group">
                 <label>Mot de passe</label>
@@ -553,6 +573,17 @@ function statutLabel(string $s): string {
                 <input type="text" name="telephone" id="editTel">
             </div>
             <div class="form-group">
+                <label>Spécialité</label>
+                    <select name="specialite">
+                        <option value="">-- Choisir --</option>
+                        <option value="Réseau">Réseau</option>
+                        <option value="Maintenance IT">Maintenance IT</option>
+                        <option value="Développement">Développement</option>
+                        <option value="Sécurité informatique">Sécurité informatique</option>
+                        <option value="Support technique">Support technique</option>
+                    </select>
+            </div>
+            <div class="form-group">
                 <label>Adresse</label>
                 <input type="text" name="adresse" id="editAdresse">
             </div>
@@ -575,12 +606,17 @@ function statutLabel(string $s): string {
         <h2>Planifier une intervention</h2>
         <form action="<?= BASE_URL ?>/app/controllers/InterventionController.php?action=create" method="POST">
             <label>Prestation</label>
-            <select name="prestation_id" required>
-                <option value="">-- Choisir --</option>
-                <?php foreach ($prestations as $p): ?>
-                <option value="<?= $p['id'] ?>"><?= e($p['titre']) ?> — <?= e($p['client_nom']) ?></option>
-                <?php endforeach; ?>
-            </select>
+                <select name="prestation_id" required>
+                    <option value="">-- Choisir --</option>
+                    <?php foreach ($prestations as $p): ?>
+                    <option value="<?= $p['id'] ?>">
+                    <?= e($p['titre']) ?> — <?= e($p['client_nom']) ?>
+                    <?php if (!empty($p['date_debut'])): ?>
+                       (Souhaité le : <?= date('d/m/Y', strtotime($p['date_debut'])) ?>)
+                    <?php endif; ?>
+                </option>
+                    <?php endforeach; ?>
+                </select>
 
             <label>Technicien</label>
             <select name="technicien_id" required>
@@ -591,11 +627,10 @@ function statutLabel(string $s): string {
             </select>
 
             <label>Date</label>
-            <input type="date" name="date" required>
+                <input type="date" name="date" id="dateIntervention" required>
 
             <label>Heure</label>
-            <input type="time" name="heure" required>
-
+                <input type="time" name="heure" id="heureIntervention" required>
             <label>Rapport / Description</label>
             <textarea name="rapport" placeholder="Détails de l'intervention..."></textarea>
 
@@ -648,15 +683,6 @@ function statutLabel(string $s): string {
                 </select>
             </div>
             <div class="form-group">
-                <label>Technicien</label>
-                <select name="technicien_id">
-                    <option value="">-- Non assigné --</option>
-                    <?php foreach ($techniciens as $t): ?>
-                    <option value="<?= $t['id'] ?>"><?= e($t['prenom'].' '.$t['nom']) ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="form-group">
                 <label>Montant (FCFA)</label>
                 <input type="number" name="montant" min="0" step="100" required>
             </div>
@@ -667,14 +693,6 @@ function statutLabel(string $s): string {
             <div class="form-group">
                 <label>Date fin</label>
                 <input type="date" name="date_fin">
-            </div>
-            <div class="form-group">
-                <label>Statut</label>
-                <select name="statut">
-                    <option value="en_attente">En attente</option>
-                    <option value="en_cours">En cours</option>
-                    <option value="termine">Terminée</option>
-                </select>
             </div>
             <div class="form-buttons">
                 <button type="submit" class="btn-save">Enregistrer</button>
@@ -742,40 +760,45 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // ── Graphiques dynamiques (données PHP injectées)
-const ctx1 = document.getElementById('interventionsChart').getContext('2d');
-new Chart(ctx1, {
-    type: 'line',
-    data: {
-        labels: <?= $chartLabels ?: '["Jan","Fév","Mar","Avr","Mai","Jun"]' ?>,
-        datasets: [{
-            label: "Interventions",
-            data: <?= $chartData ?: '[0,0,0,0,0,0]' ?>,
-            backgroundColor: 'rgba(0,123,255,0.2)',
-            borderColor: 'rgba(0,123,255,1)',
-            borderWidth: 2, tension: 0.4, fill: true
-        }]
-    },
-    options: { responsive: true, plugins: { legend: { display: true } },
-               scales: { y: { beginAtZero: true } } }
-});
+  function initCharts() {
+    // Éviter de recréer les charts si déjà initialisés
+    if (window.chart1) return;
 
-const ctx2 = document.getElementById('statutChart').getContext('2d');
-new Chart(ctx2, {
-    type: 'bar',
-    data: {
-        labels: ['Planifiées', 'En cours', 'Terminées'],
-        datasets: [{
-            data: [<?= (int)$intv_attente ?>, <?= (int)$intv_cours ?>, <?= (int)$intv_termine ?>],
-            backgroundColor: ['#e74c3c', '#f39c12', '#27ae60']
-        }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } },
-               scales: { y: { beginAtZero: true } } }
-});
+    const ctx1 = document.getElementById('interventionsChart').getContext('2d');
+    window.chart1 = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: <?= $chartLabels ?: '["Jan","Fév","Mar","Avr","Mai","Jun"]' ?>,
+            datasets: [{
+                label: "Interventions",
+                data: <?= $chartData ?: '[0,0,0,0,0,0]' ?>,
+                backgroundColor: 'rgba(0,123,255,0.2)',
+                borderColor: 'rgba(0,123,255,1)',
+                borderWidth: 2, tension: 0.4, fill: true
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: true } },
+                   scales: { y: { beginAtZero: true } } }
+    });
+
+    const ctx2 = document.getElementById('statutChart').getContext('2d');
+    window.chart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Planifiées', 'En cours', 'Terminées'],
+            datasets: [{
+                data: [<?= (int)$intv_attente ?>, <?= (int)$intv_cours ?>, <?= (int)$intv_termine ?>],
+                backgroundColor: ['#e74c3c', '#f39c12', '#27ae60']
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } },
+                   scales: { y: { beginAtZero: true } } }
+    });
+}
 
 // ── Modals clients / techniciens
-function openModal()      { document.getElementById('clientModal').style.display = 'flex'; }
-function closeModal()     { document.getElementById('clientModal').style.display = 'none'; }
+function openModalclient()      { document.getElementById('clientModal').style.display = 'flex'; }
+function closeModalclient()     { document.getElementById('clientModal').style.display = 'none'; }
 function openTechModal()  { document.getElementById('techModal').style.display = 'flex'; }
 function closeTechModal() { document.getElementById('techModal').style.display = 'none'; }
 
@@ -832,6 +855,21 @@ window.onclick = function(e) {
         if (e.target === m) m.style.display = 'none';
     });
 };
+
+// Pré-remplir la date selon la demande client
+document.querySelector('#modalIntervention select[name="prestation_id"]').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    const dates = {
+        <?php foreach ($prestations as $p): ?>
+        <?= $p['id'] ?>: '<?= $p['date_debut'] ?? '' ?>',
+        <?php endforeach; ?>
+    };
+    const date = dates[this.value];
+    if (date) {
+        document.getElementById('dateIntervention').value = date;
+    }
+});
+
 </script>
 
 </body>
